@@ -93,14 +93,16 @@ public class TestRailApi {
      */
     public static String getTestId(String runId, final Description desc) {
         try {
-            JSONArray jsonArray = getJSONArray(runId);
+            JSONArray jsonArray = getJSONArrayByRunId(runId);
 
             JSONObject target = JSONUtils.getJsonObject(jsonArray, new Predicate() {
                 public boolean apply(JSONObject obj) {
-                    return obj.get("title").toString().equals(desc.getMethodName());
+                    if (obj.get("title").toString().trim().equals(desc.getMethodName()))
+                        return equalSectionName(obj, desc.getTestClass().getSimpleName());
+                    return false;
                 }
             });
-            checkSectionName(target, desc.getTestClass().getSimpleName());
+            equalSectionName(target, desc.getTestClass().getSimpleName());
 
             return target.get("id").toString();
 
@@ -112,24 +114,26 @@ public class TestRailApi {
         }
     }
 
-    private static void checkSectionName(JSONObject target, String className) throws MalformedURLException,
-        IOException, APIException {
-        String caseId = target.get("case_id").toString();
-        JSONObject jsonOfCase = (JSONObject) client.sendGet(new StringBuilder("get_case/").append(caseId)
-            .toString());
+    private static boolean equalSectionName(JSONObject target, String className) {
+        try {
+            String caseId = target.get("case_id").toString();
+            JSONObject jsonOfCase = (JSONObject) client.sendGet(new StringBuilder("get_case/").append(caseId)
+                .toString());
 
-        String sectionId = jsonOfCase.get("section_id").toString();
-        JSONObject jsonOfSection = (JSONObject) client.sendGet(new StringBuilder("get_section/").append(
-            sectionId).toString());
+            String sectionId = jsonOfCase.get("section_id").toString();
+            JSONObject jsonOfSection = (JSONObject) client.sendGet(new StringBuilder("get_section/").append(
+                sectionId).toString());
 
-        String sectionName = jsonOfSection.get("name").toString();
+            String sectionName = jsonOfSection.get("name").toString();
 
-        if (!className.equals(sectionName))
-            throw new TestRailUnitException("className [" + className + "] doesn't equal sectionName ["
-                + sectionName + "]");
+            return className.equals(sectionName);
+        } catch (Exception e) {
+            logger.error("exception:", e);
+            throw new TestRailUnitException("exception:" + e);
+        }
     }
 
-    private static JSONArray getJSONArray(String runId) throws MalformedURLException, IOException,
+    private static JSONArray getJSONArrayByRunId(String runId) throws MalformedURLException, IOException,
         APIException {
         JSONArray jsonArray = runIdtoJsonArray.get(runId);
         if (jsonArray == null || jsonArray.isEmpty()) {
