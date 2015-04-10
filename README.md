@@ -19,8 +19,7 @@ public TestRailUnit tu = new TestRailUnit(XXX); // XXXはtestrailのrunIdを入�
 ```
 |2. testrailに実行結果を反映したいjunitテストメソッドに、@TestRailアノテーションを付与する
 ```
-@Rule
- @TestRail
+@TestRail
 @Test
 public void Sample_01() {
 ...
