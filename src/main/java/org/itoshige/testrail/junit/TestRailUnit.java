@@ -1,78 +1,61 @@
 package org.itoshige.testrail.junit;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.itoshige.testrail.annotation.TestRail;
-import org.itoshige.testrail.util.TestRailApi;
-import org.itoshige.testrail.util.TestRailApi.ResultStatus;
-import org.junit.internal.runners.model.MultipleFailureException;
-import org.junit.rules.TestRule;
+import org.itoshige.testrail.annotation.IgnoreTestRail;
+import org.itoshige.testrail.cache.CaseCache;
+import org.itoshige.testrail.cache.SectionCache;
+import org.itoshige.testrail.cache.TestCache;
+import org.itoshige.testrail.client.Pair;
+import org.itoshige.testrail.client.TestInitializerException;
+import org.itoshige.testrail.client.TestRailClient;
+import org.itoshige.testrail.client.TestRailClient.ResultStatus;
+import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @see https
- *      ://github.com/tauty/rufa/blob/master/src/main/java/com/github/tauty/
- *      rufa/theories/RTheories.java
- * 
- * @see https
- *      ://github.com/tauty/rufa/blob/master/src/main/java/com/github/tauty/
- *      rufa/rules/RErrorCollector.java
- * 
- * @see https
- *      ://github.com/tauty/rufa/blob/master/src/test/java/com/github/tauty/
- *      rufa/rules/RErrorCollectorTest.java
- * 
- * @author itoshige
- * 
- */
-@SuppressWarnings("deprecation")
-public class TestRailUnit implements TestRule {
-
+public class TestRailUnit extends TestWatcher {
     private static final Logger logger = LoggerFactory.getLogger(TestRailUnit.class);
 
-    private List<Throwable> errors = new ArrayList<Throwable>();
-    private Statement fNext;
-    private String runId;
-
     public TestRailUnit(String runId) {
-        this.runId = runId;
+        try {
+            if (runId == null || runId.isEmpty())
+                throw new TestInitializerException("runId is empty.");
+
+            TestCache.getIns().setTestsMap(runId);
+            Pair<String, String> pair = TestRailClient.getRun(runId);
+
+            SectionCache.getIns().setSectionMap(pair.getFirst(), pair.getSecond());
+            CaseCache.getIns().setCasesMap(pair.getFirst(), pair.getSecond());
+        } catch (TestInitializerException e) {
+            logger.error("[ERROR] exception:{}", e);
+            System.exit(1);
+        }
     }
 
-    @Override
-    public Statement apply(Statement stmt, final Description desc) {
-        this.fNext = stmt;
-
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    fNext.evaluate();
-                } catch (Throwable t) {
-                    errors.add(t);
-                } finally {
-                    final TestRail testrail = desc.getAnnotation(TestRail.class);
-
-                    if (isTestRail(testrail)) {
-                        final String testId = TestRailApi.getTestId(runId, desc);
-                        if (errors.isEmpty()) {
-                            TestRailApi.addResult(testId, ResultStatus.PASSED, "This test worked fine!");
-                        } else {
-                            logger.error("[ERROR]assertError : {}", errors.toString());
-                            TestRailApi.addResult(testId, ResultStatus.FAILED, errors.toString());
-                        }
-                    }
-                }
-                MultipleFailureException.assertEmpty(errors);
-            }
-        };
+    protected void succeeded(Description desc) {
+        if (!isIgnore(desc)) {
+            TestRailClient.addResult(getTestId(desc), ResultStatus.PASSED, "This test worked fine!");
+        }
     }
 
-    private boolean isTestRail(Annotation obj) {
-        return obj != null && TestRail.class.equals(obj.annotationType());
+    protected void failed(Throwable e, Description desc) {
+        if (!isIgnore(desc)) {
+            logger.error("[ERROR]assertError : {}", e);
+            TestRailClient.addResult(getTestId(desc), ResultStatus.FAILED, e.toString());
+        }
+    }
+
+    private boolean isIgnore(Description desc) {
+        IgnoreTestRail testrail = desc.getAnnotation(IgnoreTestRail.class);
+        return testrail != null && IgnoreTestRail.class.equals(testrail.annotationType());
+    }
+
+    private String getTestId(Description desc) {
+        String sectionName = desc.getTestClass().getSimpleName();
+        String title = desc.getMethodName();
+
+        String sectionId = SectionCache.getIns().getSectionId(sectionName);
+        String caseId = CaseCache.getIns().getCaseId(sectionId, title);
+        return TestCache.getIns().getTestId(caseId);
     }
 }
