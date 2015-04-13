@@ -1,4 +1,38 @@
 # testrail-unit
+## -- English --
+## outline
+* This tool reflect junit test result to testrail.
+
+## how to use
+### preparation
+#### If you create test case in testrail, you need to observe the rule.
+* section name of testrail == junit test class name
+* don't define the same section name in the same testcase
+* test case name of testrail == junit test method name
+* prepare [testrail-unit.properties](https://github.com/itoshige/testrail-unit/blob/develop/src/test/resources/testrail-unit.properties) in your project
+
+### how to use
+* [Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/annotation/TestRailAnnotationTest.java)
+
+|1. set @ClassRule and @Rule in junit test class.
+```
+@ClassRule
+public static TestRailUnit tr = new TestRailUnit(XXX);
+@Rule
+public TestRailStorage ts = new TestRailStorage(XXX);
+...
+※XXX: testrail runId
+```
+|2. If you don't want to reflect junit result to testrail, Please use @IgnoreTestRail
+```
+@IgnoreTestRail
+@Test
+public void Sample_01() {
+...
+```
+
+
+## -- 日本語 --
 ## outline
 * junitの実行結果を、testrailのテストケースに反映する
 
