@@ -1,10 +1,12 @@
-package org.itoshige.testrail.annotation;
+package org.itoshige.testrail.rule;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.itoshige.testrail.TestBase;
-import org.itoshige.testrail.junit.TestRailUnit;
+import org.itoshige.testrail.annotation.IgnoreTestRail;
+import org.itoshige.testrail.rules.TestRailStorage;
+import org.itoshige.testrail.rules.TestRailUnit;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,9 +19,10 @@ import org.junit.Test;
  */
 public class TestRailAnnotationTest extends TestBase {
 
-    @Rule
     @ClassRule
     public static TestRailUnit tr = new TestRailUnit("281");
+    @Rule
+    public TestRailStorage ts = new TestRailStorage("281");
 
     @IgnoreTestRail
     @Test
