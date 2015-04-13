@@ -1,4 +1,4 @@
-package org.itoshige.testrail.client;
+package org.itoshige.testrail.client.core;
 
 public class APIException extends Exception
 {

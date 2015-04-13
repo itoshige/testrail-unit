@@ -1,7 +1,7 @@
 package org.itoshige.testrail.client;
 
 /**
- * testrail logic exception class
+ * testrail logic exception
  * 
  * @author itoshige
  * 

@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TestRail Annotation
+ * If you ignore from testrail, please use this annotation.
  * 
  * @author itoshige
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-public @interface TestRail {
+public @interface IgnoreTestRail {
 }

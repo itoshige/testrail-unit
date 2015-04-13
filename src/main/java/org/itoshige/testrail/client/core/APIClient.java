@@ -8,7 +8,7 @@
  *
  * Copyright Gurock Software GmbH. See license.md for details.
  */
-package org.itoshige.testrail.client;
+package org.itoshige.testrail.client.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;

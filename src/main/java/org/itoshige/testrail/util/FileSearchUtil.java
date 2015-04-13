@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.itoshige.testrail.client.TestRailUnitException;
+import org.itoshige.testrail.client.TestInitializerException;
 
 /**
  * @see http 
@@ -13,7 +13,7 @@ import org.itoshige.testrail.client.TestRailUnitException;
  * @author itoshige
  * 
  */
-public class FileSearch {
+public class FileSearchUtil {
 
     private String fileNameToSearch;
     private List<String> result = new ArrayList<String>();
@@ -32,16 +32,16 @@ public class FileSearch {
 
     public static String getFilePath(String filePath, String fileName) {
 
-        FileSearch fileSearch = new FileSearch();
+        FileSearchUtil fileSearch = new FileSearchUtil();
 
         fileSearch.searchDirectory(new File(filePath), fileName);
 
         int size = fileSearch.getResult().size();
         if (size == 0)
-            throw new TestRailUnitException(fileName + " doesn't exist");
+            throw new TestInitializerException(fileName + " doesn't exist");
 
         if (size > 1)
-            throw new TestRailUnitException(fileName + " exist multiple");
+            throw new TestInitializerException(fileName + " exist multiple");
 
         String matched = fileSearch.getResult().get(0);
         return matched;
