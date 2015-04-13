@@ -1,7 +1,6 @@
 package org.itoshige.testrail.cache;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.itoshige.testrail.client.TestInitializerException;
 import org.itoshige.testrail.client.TestRailClient;
@@ -20,7 +19,7 @@ public class SectionCache {
     private static final SectionCache instance = new SectionCache();
 
     // sectionName to sectionId
-    private final HashMap<String, String> sectionMap = CollectionUtil.newHashMap();
+    private final ConcurrentHashMap<String, String> sectionMap = CollectionUtil.newConcurrentMap();
 
     public static SectionCache getIns() {
         return instance;
@@ -35,11 +34,9 @@ public class SectionCache {
 
     public void setSectionMap(String projectId, String suiteId) {
         JSONArray sections = TestRailClient.getSections(projectId, suiteId);
-        Map<String, String> map = JSONUtil.convertJsonArrayToMap(sections, "name", "id");
-        if (map == null || map.isEmpty())
+        JSONUtil.convertJsonArrayToMap(sections, sectionMap, "name", "id");
+        if (sectionMap == null || sectionMap.isEmpty())
             throw new TestInitializerException("section data isn't in testrail. projectId:" + projectId
                 + " suiteId:" + suiteId);
-
-        sectionMap.putAll(map);
     }
 }

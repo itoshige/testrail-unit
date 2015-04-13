@@ -1,8 +1,9 @@
 package org.itoshige.testrail.client;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.itoshige.testrail.cache.ResultCache;
 import org.itoshige.testrail.client.core.APIClient;
 import org.itoshige.testrail.util.ClientInfoUtil;
 import org.itoshige.testrail.util.ClientInfoUtil.ClientInfoModel;
@@ -11,6 +12,12 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TestRail connection client
+ * 
+ * @author itoshige
+ * 
+ */
 public class TestRailClient {
     private static final Logger logger = LoggerFactory.getLogger(TestRailClient.class);
 
@@ -55,22 +62,17 @@ public class TestRailClient {
         }
     }
 
-    public static JSONObject addResult(String testId, ResultStatus status, String comment) {
+    public static void addResults(Pair<String, Class<?>> runId2Class) {
         try {
-            JSONObject result = (JSONObject) client.sendPost(new StringBuilder("add_result/").append(testId)
-                .toString(), getResult(status, comment));
-            return result;
+            Map<String, List<Map<String, Object>>> results = ResultCache.getIns().getResults(runId2Class);
+            if (results == null || results.isEmpty())
+                return;
+            client.sendPost(new StringBuilder("add_results/").append(runId2Class.getFirst()).toString(),
+                results);
         } catch (Exception e) {
             logger.error("[ERROR]add result exception:{}", e);
             throw new TestRailUnitException(e);
         }
-    }
-
-    private static Map<String, Object> getResult(ResultStatus status, String comment) {
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("status_id", status.getId());
-        data.put("comment", comment);
-        return data;
     }
 
     public enum ResultStatus {

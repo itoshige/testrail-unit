@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TestRail Annotation
+ * If you ignore from testrail, please use this annotation.
  * 
  * @author itoshige
  * 

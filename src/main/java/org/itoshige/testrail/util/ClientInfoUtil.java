@@ -7,6 +7,12 @@ import org.itoshige.testrail.client.TestInitializerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TestRail client info
+ * 
+ * @author itoshige
+ * 
+ */
 public class ClientInfoUtil {
     private static final Logger logger = LoggerFactory.getLogger(ClientInfoUtil.class);
 
