@@ -5,10 +5,7 @@ import static org.junit.Assert.*;
 
 import org.itoshige.testrail.TestBase;
 import org.itoshige.testrail.annotation.IgnoreTestRail;
-import org.itoshige.testrail.rules.TestRailStorage;
-import org.itoshige.testrail.rules.TestRailUnit;
-import org.junit.ClassRule;
-import org.junit.Rule;
+import org.itoshige.testrail.annotation.LinkTestRailRun;
 import org.junit.Test;
 
 /**
@@ -17,12 +14,8 @@ import org.junit.Test;
  * @author itoshige
  * 
  */
+@LinkTestRailRun(281)
 public class bbb extends TestBase {
-
-    @ClassRule
-    public static TestRailUnit tr = new TestRailUnit("281");
-    @Rule
-    public TestRailStorage ts = new TestRailStorage("281");
 
     @Test
     public void hogehogeページの確認() {

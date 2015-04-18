@@ -1,6 +1,8 @@
 package org.itoshige.testrail.rules;
 
 import org.itoshige.testrail.annotation.IgnoreTestRail;
+import org.itoshige.testrail.annotation.LinkTestRailHelper;
+import org.itoshige.testrail.annotation.LinkTestRailRun;
 import org.itoshige.testrail.cache.CaseCache;
 import org.itoshige.testrail.cache.ResultCache;
 import org.itoshige.testrail.cache.SectionCache;
@@ -23,14 +25,16 @@ public class TestRailStorage extends TestWatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(TestRailStorage.class);
 
-    private String runId;
 
-    public TestRailStorage(String runId) {
-        this.runId = runId;
+    public TestRailStorage() {
     }
-
+    
+    @Override
     protected void succeeded(Description desc) {
         if (!isIgnore(desc)) {
+        	String runId = Long.toString(LinkTestRailHelper.getAnnotation(
+    				desc.getTestClass(), LinkTestRailRun.class).value());
+    		
             Pair<String, Class<?>> runId2Class = new Pair<String, Class<?>>(runId, desc.getTestClass());
 
             ResultCache.getIns().setResult(runId2Class,
@@ -38,8 +42,11 @@ public class TestRailStorage extends TestWatcher {
         }
     }
 
+    @Override
     protected void failed(Throwable e, Description desc) {
         if (!isIgnore(desc)) {
+        	String runId = Long.toString(LinkTestRailHelper.getAnnotation(
+    				desc.getTestClass(), LinkTestRailRun.class).value());
             Pair<String, Class<?>> runId2Class = new Pair<String, Class<?>>(runId, desc.getTestClass());
             logger.error("[ERROR]assertError : {}", e.getMessage());
             ResultCache.getIns().setResult(runId2Class,

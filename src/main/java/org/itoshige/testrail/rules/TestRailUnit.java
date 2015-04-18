@@ -1,5 +1,7 @@
 package org.itoshige.testrail.rules;
 
+import org.itoshige.testrail.annotation.LinkTestRailHelper;
+import org.itoshige.testrail.annotation.LinkTestRailRun;
 import org.itoshige.testrail.cache.CaseCache;
 import org.itoshige.testrail.cache.SectionCache;
 import org.itoshige.testrail.cache.TestCache;
@@ -25,14 +27,27 @@ public class TestRailUnit extends TestWatcher {
     public void beforeclass() {
         System.out.println("test");
     }
+    
+    public TestRailUnit() {
+    }
 
-    private String runId;
+	@Override
+	protected void starting(Description desc) {
+		String runId = null;
 
-    public TestRailUnit(String runId) {
-        this.runId = runId;
-        try {
-            if (runId == null || runId.isEmpty())
-                throw new TestInitializerException("runId is empty.");
+		LinkTestRailRun objRun = LinkTestRailHelper.getAnnotation(
+				desc.getTestClass(), LinkTestRailRun.class);
+		if (objRun != null) {
+			runId = Long.toString(objRun.value());
+		}
+		try {
+			// This check is mandatory. If Run ID  is not found then stop the processing
+			// Will skip the checking from other places
+			if (runId == null || runId.isEmpty())
+				throw new TestInitializerException(
+						"Annotation @LinkTestRailRun(runId) not found in any scope for the class["
+								+ desc.getTestClass().getSimpleName() + "].");
+		
 
             TestCache.getIns().setTestsMap(runId);
             Pair<String, String> pair = TestRailClient.getRun(runId);
@@ -46,7 +61,13 @@ public class TestRailUnit extends TestWatcher {
         }
     }
 
+    @Override
     protected void finished(Description desc) {
+    	String runId = Long.toString(LinkTestRailHelper.getAnnotation(
+				desc.getTestClass(), LinkTestRailRun.class).value());
+		// No Need to runId for null here as it has already been checked in the 
+		// method starting
+    	
         TestRailClient.addResults(new Pair<String, Class<?>>(runId, desc.getTestClass()));
         logger.info("update testrail. runId:{}", runId);
     }
