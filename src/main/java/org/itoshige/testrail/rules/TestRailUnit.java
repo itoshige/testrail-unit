@@ -8,6 +8,7 @@ import org.itoshige.testrail.cache.TestCache;
 import org.itoshige.testrail.client.Pair;
 import org.itoshige.testrail.client.TestInitializerException;
 import org.itoshige.testrail.client.TestRailClient;
+import org.itoshige.testrail.util.TestRailUnitPropertyUtil;
 import org.junit.BeforeClass;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -33,6 +34,9 @@ public class TestRailUnit extends TestWatcher {
 
 	@Override
 	protected void starting(Description desc) {
+		if(TestRailUnitPropertyUtil.INSTANCE.isTestRailUnitDisabled())
+			return;
+		
 		String runId = null;
 
 		LinkTestRailRun objRun = LinkTestRailHelper.getAnnotation(
@@ -63,6 +67,9 @@ public class TestRailUnit extends TestWatcher {
 
     @Override
     protected void finished(Description desc) {
+    	if(TestRailUnitPropertyUtil.INSTANCE.isTestRailUnitDisabled())
+			return;
+    	
     	String runId = Long.toString(LinkTestRailHelper.getAnnotation(
 				desc.getTestClass(), LinkTestRailRun.class).value());
 		// No Need to runId for null here as it has already been checked in the 
