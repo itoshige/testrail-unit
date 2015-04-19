@@ -10,6 +10,7 @@ import org.itoshige.testrail.cache.TestCache;
 import org.itoshige.testrail.client.Pair;
 import org.itoshige.testrail.client.TestRailClient.ResultStatus;
 import org.itoshige.testrail.model.TestResult;
+import org.itoshige.testrail.util.TestRailUnitPropertyUtil;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.slf4j.Logger;
@@ -31,6 +32,9 @@ public class TestRailStorage extends TestWatcher {
     
     @Override
     protected void succeeded(Description desc) {
+    	if(TestRailUnitPropertyUtil.INSTANCE.isTestRailUnitDisabled())
+			return;
+    	
         if (!isIgnore(desc)) {
         	String runId = Long.toString(LinkTestRailHelper.getAnnotation(
     				desc.getTestClass(), LinkTestRailRun.class).value());
@@ -44,6 +48,9 @@ public class TestRailStorage extends TestWatcher {
 
     @Override
     protected void failed(Throwable e, Description desc) {
+    	if(TestRailUnitPropertyUtil.INSTANCE.isTestRailUnitDisabled())
+			return;
+    	
         if (!isIgnore(desc)) {
         	String runId = Long.toString(LinkTestRailHelper.getAnnotation(
     				desc.getTestClass(), LinkTestRailRun.class).value());
