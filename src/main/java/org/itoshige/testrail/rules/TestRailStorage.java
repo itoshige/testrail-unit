@@ -63,8 +63,10 @@ public class TestRailStorage extends TestWatcher {
     }
 
     private boolean isIgnore(Description desc) {
-        IgnoreTestRail testrail = desc.getAnnotation(IgnoreTestRail.class);
-        return testrail != null && IgnoreTestRail.class.equals(testrail.annotationType());
+        IgnoreTestRail testrailMethod = desc.getAnnotation(IgnoreTestRail.class);
+        IgnoreTestRail testrailClass = desc.getTestClass().getAnnotation(IgnoreTestRail.class);
+        return (testrailMethod != null && IgnoreTestRail.class.equals(testrailMethod.annotationType()))
+        		|| (testrailClass != null && IgnoreTestRail.class.equals(testrailClass.annotationType()));
     }
 
     private String getTestId(Description desc) {
