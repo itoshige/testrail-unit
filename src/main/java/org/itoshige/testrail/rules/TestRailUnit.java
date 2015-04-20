@@ -1,5 +1,6 @@
 package org.itoshige.testrail.rules;
 
+import org.itoshige.testrail.annotation.IgnoreTestRail;
 import org.itoshige.testrail.annotation.LinkTestRailHelper;
 import org.itoshige.testrail.annotation.LinkTestRailRun;
 import org.itoshige.testrail.cache.CaseCache;
@@ -36,6 +37,8 @@ public class TestRailUnit extends TestWatcher {
 	protected void starting(Description desc) {
 		if(TestRailUnitPropertyUtil.INSTANCE.isTestRailUnitDisabled())
 			return;
+		if (isIgnore(desc)) 
+			return;
 		
 		String runId = null;
 
@@ -69,6 +72,8 @@ public class TestRailUnit extends TestWatcher {
     protected void finished(Description desc) {
     	if(TestRailUnitPropertyUtil.INSTANCE.isTestRailUnitDisabled())
 			return;
+		if (isIgnore(desc)) 
+			return;
     	
     	String runId = Long.toString(LinkTestRailHelper.getAnnotation(
 				desc.getTestClass(), LinkTestRailRun.class).value());
@@ -77,5 +82,10 @@ public class TestRailUnit extends TestWatcher {
     	
         TestRailClient.addResults(new Pair<String, Class<?>>(runId, desc.getTestClass()));
         logger.info("update testrail. runId:{}", runId);
+    }
+    
+    private boolean isIgnore(Description desc) {
+        IgnoreTestRail testrail = desc.getAnnotation(IgnoreTestRail.class);
+        return testrail != null && IgnoreTestRail.class.equals(testrail.annotationType());
     }
 }
