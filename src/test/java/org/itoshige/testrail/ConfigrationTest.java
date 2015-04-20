@@ -3,6 +3,7 @@ package org.itoshige.testrail;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import org.itoshige.testrail.annotation.IgnoreTestRail;
 import org.itoshige.testrail.util.ClientInfoUtil;
 import org.itoshige.testrail.util.ClientInfoUtil.ClientInfoModel;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.junit.Test;
  * @author itoshige
  * 
  */
+@IgnoreTestRail
 public class ConfigrationTest extends TestBase {
 
     @Test

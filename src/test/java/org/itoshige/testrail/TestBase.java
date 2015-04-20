@@ -4,6 +4,10 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.itoshige.testrail.rules.TestRailStorage;
+import org.itoshige.testrail.rules.TestRailUnit;
+import org.junit.ClassRule;
+import org.junit.Rule;
 
 /**
  * Junit Test base
@@ -12,6 +16,10 @@ import org.apache.log4j.PatternLayout;
  * 
  */
 public class TestBase {
+    @ClassRule
+    public static TestRailUnit tr = new TestRailUnit();
+    @Rule
+    public TestRailStorage ts = new TestRailStorage();
 
     static {
         /** slf4j console output */
