@@ -1,0 +1,17 @@
+{
+    "url":"http://example.com/",
+    "user":"hoge",
+    "password":"hoge",
+    "isDisabled":false,
+    "sync":true,
+    "runIds":[
+        {
+        "target":"com.github.itoshige.testrail",
+        "runId":"359"
+        },
+        {
+        "target":"com.github.itoshige.testrail.rule",
+        "runId":"359"
+        }
+    ]
+}
