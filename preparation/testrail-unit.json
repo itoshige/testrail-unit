@@ -4,7 +4,8 @@
     "password":"hoge",
     "isDisabled":false,
     "sync":true,
-    "runIds":[
+    "isDebugEnabled":false, 
+   "runIds":[
         {
         "target":"com.github.itoshige.testrail",
         "runId":"359"

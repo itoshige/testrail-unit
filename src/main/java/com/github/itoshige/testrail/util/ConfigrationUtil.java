@@ -42,7 +42,7 @@ public class ConfigrationUtil {
     }
 
     /**
-     * chec test rail unit disabled
+     * check test rail unit disabled
      * 
      * @return boolean
      */
@@ -51,9 +51,24 @@ public class ConfigrationUtil {
         return assureBoolean(jsonObject, "isDisabled");
     }
 
+    /**
+     * sync junit test and testrail
+     * 
+     * @return boolean
+     */
     public static boolean isSync() {
         JSONObject jsonObject = getConfig();
         return assureBoolean(jsonObject, "sync");
+    }
+
+    public static boolean isTestRailDebugEnabled() {
+        JSONObject jsonObject = getConfig();
+        try {
+            return assureBoolean(jsonObject, "isDebugEnabled");
+        } catch (TestInitializerException e) {
+            logger.debug("isDebugEnabled flag doesn't exist.");
+            return false;
+        }
     }
 
     public static class ClientInfoModel {
@@ -94,7 +109,7 @@ public class ConfigrationUtil {
     private static String assureValue(JSONObject jsonObject, String key) {
         String value = (String) jsonObject.get(key);
         if (value == null || value.isEmpty())
-            throw new TestInitializerException(new StringBuilder(key).append(" is null or Empty").toString());
+            throw new TestInitializerException(String.format("key:%s is null or Empty", key));
         return value;
     }
 
@@ -102,7 +117,7 @@ public class ConfigrationUtil {
         try {
             return (Boolean) jsonObject.get(key);
         } catch (Exception e) {
-            throw new TestInitializerException(new StringBuilder(key).append(" is invalid.").toString());
+            throw new TestInitializerException(String.format("key:%s is invalid.", key));
         }
     }
 
@@ -122,8 +137,8 @@ public class ConfigrationUtil {
                 return runIdInfo.getRunId();
             }
         }
-        throw new TestInitializerException(new StringBuilder(classPath).append(" isn't defined runId in ")
-            .append(CONFIG_FILE).append(".").toString());
+        throw new TestInitializerException(String.format("classPath:%s isn't defined runId in %s.",
+            classPath, CONFIG_FILE));
     }
 
     /**
@@ -169,7 +184,7 @@ public class ConfigrationUtil {
 
             return configs.get(CONFIG_FILE);
         } catch (Exception e) {
-            throw new TestInitializerException("testrail-unit can't be read.", e);
+            throw new TestInitializerException(String.format("%s can't be read.", CONFIG_FILE), e);
         }
     }
 }

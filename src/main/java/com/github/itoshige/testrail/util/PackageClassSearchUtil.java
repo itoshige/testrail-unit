@@ -1,5 +1,6 @@
 package com.github.itoshige.testrail.util;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,9 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.itoshige.testrail.annotation.Section;
 import com.github.itoshige.testrail.client.TestInitializerException;
 
@@ -24,6 +28,8 @@ import com.github.itoshige.testrail.client.TestInitializerException;
  * 
  */
 public class PackageClassSearchUtil {
+    private static final Logger logger = LoggerFactory.getLogger(PackageClassSearchUtil.class);
+
     private static final String FILE_END = "Test.class";
 
     /** sectionStore */
@@ -41,20 +47,39 @@ public class PackageClassSearchUtil {
             putTestClasses(runId, packageName);
         }
 
-        if (testClasses.get(runId).isEmpty())
-            throw new TestInitializerException("package name is invalid.");
+        if (testClasses.get(runId) == null || testClasses.get(runId).isEmpty())
+            throw new TestInitializerException(String.format("package name is invalid. runId:%s", runId));
 
         return testClasses.get(runId);
     }
 
     private static void putTestClasses(String runId, String packageName) {
+        logger.debug("target package:{}", packageName);
+
         Set<String> clazzes = getTestClassesByPackage(packageName);
+
+        Set<String> putClasses = new HashSet<String>();
         for (String clazz : clazzes) {
-            if (testClasses.get(runId).contains(clazz))
-                throw new TestInitializerException(new StringBuilder(
-                    "junit test has same secion name. section:").append(clazz).toString());
+            if (TestRailUnitUtil.isTestRailDebugEnabled())
+                logger.debug("target class:{}", clazz);
+
+            if (existTestClasses(clazz))
+                continue;
+
+            putClasses.add(clazz);
         }
-        testClasses.put(runId, clazzes);
+        testClasses.put(runId, putClasses);
+    }
+
+    private static boolean existTestClasses(String clazz) {
+        if (testClasses == null || testClasses.keySet() == null)
+            return false;
+
+        if (TestRailUnitUtil.isTestRailDebugEnabled())
+            logger.debug("testClasses values:{} class:{} result:{}", new Object[] { testClasses.values(),
+                clazz, testClasses.values().contains(clazz) });
+
+        return testClasses.values().contains(clazz);
     }
 
     private static Set<String> getTestClassesByPackage(String packageName) {
@@ -86,26 +111,23 @@ public class PackageClassSearchUtil {
                 Section sectionName = clazz.getAnnotation(Section.class);
                 if (TestRailUnitUtil.hasSection(sectionName)) {
                     String trimSectionName = sectionName.name().trim();
-                    if (sectionNamesInTestRun.contains(trimSectionName))
-                        throw new TestInitializerException(new StringBuilder(
-                            "junit test has same secion name. section:").append(trimSectionName).toString());
 
                     sectionNamesInTestRun.add(trimSectionName);
                     continue;
                 }
+
                 sectionNamesInTestRun.add(clazz.getSimpleName());
             }
 
             return sectionNamesInTestRun;
         } catch (Exception e) {
-            throw new TestInitializerException(
-                new StringBuilder("couldn't get package classes. packageName:").append(packageName)
-                    .append(" Exception:").append(e).toString());
+            throw new TestInitializerException(String.format("couldn't get package classes. packageName:%s",
+                packageName), e);
         }
     }
 
     private static String getFileNameWithPackage(String fileName, String packageName) {
-        String filePackage = fileName.replace("\\", ".");
+        String filePackage = fileName.replace(File.separator, ".");
 
         Pattern pattern = Pattern.compile(new StringBuilder(packageName).append(".*").toString());
         Matcher matcher = pattern.matcher(filePackage);
@@ -114,7 +136,7 @@ public class PackageClassSearchUtil {
             int last = match.lastIndexOf(".class");
             return match.substring(0, last);
         }
-        throw new TestInitializerException(new StringBuilder("couldn't find package class. fileName:")
-            .append(fileName).append(" packageName:").append(packageName).toString());
+        throw new TestInitializerException(String.format(
+            "couldn't find package class. fileName:%s  packageName:%s", fileName, packageName));
     }
 }

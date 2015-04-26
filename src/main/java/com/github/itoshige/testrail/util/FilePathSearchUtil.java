@@ -1,10 +1,9 @@
 package com.github.itoshige.testrail.util;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.github.itoshige.testrail.client.TestInitializerException;
 
@@ -19,6 +18,8 @@ public class FilePathSearchUtil {
     private String fileNameToSearch;
     private List<String> result = new ArrayList<String>();
 
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+
     /**
      * get target file path
      * 
@@ -26,11 +27,22 @@ public class FilePathSearchUtil {
      * @return
      */
     public static String getPath(String fileName) {
-        String path = getPathFromRepository(System.getProperty("user.dir"), fileName);
-        if (path.isEmpty()) {
-            path = getPathFromClassPath(fileName);
+        URL url = FilePathSearchUtil.class.getClassLoader().getResource(fileName);
+        if (url != null && !url.getPath().isEmpty())
+            return url.getPath();
+
+        if (isWindows()) {
+            String path = getPathFromRepository(System.getProperty("user.dir"), fileName);
+            if (path != null && !path.isEmpty())
+                return path;
         }
-        return path;
+
+        throw new TestInitializerException(String.format("fileName:%s doesn't exist.",
+            ConfigrationUtil.CONFIG_FILE));
+    }
+
+    private static boolean isWindows() {
+        return OS_NAME.startsWith("windows");
     }
 
     /**
@@ -47,13 +59,6 @@ public class FilePathSearchUtil {
         FilePathSearchUtil fileSearch = new FilePathSearchUtil();
         fileSearch.searchDirectory(new File(filePath), fileName);
 
-        int size = fileSearch.result.size();
-        if (size > 1)
-            throw new TestInitializerException(new StringBuilder(fileName).append(" exist multiple")
-                .toString());
-        if (size == 0)
-            return "";
-
         String matched = fileSearch.result.get(0);
         return matched;
     }
@@ -67,7 +72,6 @@ public class FilePathSearchUtil {
     }
 
     private void search(File file) {
-
         if (file.isDirectory()) {
             if (file.canRead()) {
                 for (File temp : file.listFiles()) {
@@ -81,39 +85,5 @@ public class FilePathSearchUtil {
                 }
             }
         }
-    }
-
-    /**
-     * @see http://m12i.hatenablog.com/entry/2015/02/02/005357
-     * 
-     * @param fileName
-     * @return
-     */
-    private static String getPathFromClassPath(final String fileName) {
-        final String pathSeparator = System.getProperty("path.separator");
-        final String javaClassPath = System.getProperty("java.class.path");
-
-        String filePath = "";
-        final Set<File> set = new HashSet<File>();
-        for (final String path : javaClassPath.split(pathSeparator)) {
-
-            final File directoryOrArchiveFile = new File(path);
-            final File directory = directoryOrArchiveFile.isDirectory() ? directoryOrArchiveFile
-                : directoryOrArchiveFile.getParentFile();
-            final File file = new File(directory, fileName);
-            if (file.isFile()) {
-                if (!set.add(file)) {
-                    throw new TestInitializerException(new StringBuilder(fileName).append(" exist multiple")
-                        .toString());
-                }
-                filePath = file.getPath();
-            }
-        }
-
-        if (filePath.isEmpty())
-            throw new TestInitializerException(new StringBuilder(fileName).append(" doesn't exist")
-                .toString());
-
-        return filePath;
     }
 }

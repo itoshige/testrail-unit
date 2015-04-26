@@ -25,6 +25,10 @@ public class TestRailUnitUtil {
         PackageClassSearchUtil.getTestClasses(runId);
     }
 
+    public static boolean isTestRailDebugEnabled() {
+        return ConfigrationUtil.isTestRailDebugEnabled();
+    }
+
     public static boolean isSkipClass(Class<?> clazz) {
         IgnoreTestRail ignoreTestRailClass = clazz.getAnnotation(IgnoreTestRail.class);
         Ignore ignoreClass = clazz.getAnnotation(Ignore.class);

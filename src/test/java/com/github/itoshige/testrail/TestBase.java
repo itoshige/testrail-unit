@@ -7,7 +7,6 @@ import org.apache.log4j.PatternLayout;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
-import com.github.itoshige.testrail.annotation.IgnoreTestRail;
 import com.github.itoshige.testrail.rules.TestRailStore;
 import com.github.itoshige.testrail.rules.TestRailUnit;
 
@@ -17,7 +16,6 @@ import com.github.itoshige.testrail.rules.TestRailUnit;
  * @author itoshige
  * 
  */
-@IgnoreTestRail
 public class TestBase {
 
     @ClassRule

@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.itoshige.testrail.client.Pair;
 import com.github.itoshige.testrail.client.TestRailUnitException;
 import com.github.itoshige.testrail.model.TestResultModel;
+import com.github.itoshige.testrail.model.store.TestResultStoreKey;
 import com.github.itoshige.testrail.util.CollectionUtil;
 
 /**
@@ -27,25 +27,28 @@ public class TestResultStore {
     private static final TestResultStore instance = new TestResultStore();
 
     // runId, class to testresults
-    private ConcurrentHashMap<Pair<String, Class<?>>, List<TestResultModel>> resultsMap = CollectionUtil
+    private ConcurrentHashMap<TestResultStoreKey, List<TestResultModel>> resultsMap = CollectionUtil
         .newConcurrentMap();
+
+    private TestResultStore() {
+    }
 
     static TestResultStore getIns() {
         return instance;
     }
 
-    public void setResult(Pair<String, Class<?>> runId2Class, TestResultModel result) {
-        List<TestResultModel> testResults = resultsMap.get(runId2Class);
+    public void setResult(TestResultStoreKey key, TestResultModel result) {
+        List<TestResultModel> testResults = resultsMap.get(key);
         List<TestResultModel> list = Collections.synchronizedList(new ArrayList<TestResultModel>());
         if (isEmplyResult(testResults)) {
             list.add(result);
-            resultsMap.putIfAbsent(runId2Class, list);
+            resultsMap.putIfAbsent(key, list);
         } else if (!testResults.contains(result)) {
             testResults.add(result);
         } else {
-            logger.error("execute same test. runId:{} testId:{}", runId2Class.getFirst(), result.getTestId());
-            throw new TestRailUnitException(new StringBuilder("execute same test. runId:")
-                .append(runId2Class.getFirst()).append("testId:").append(result.getTestId()).toString());
+            logger.error("execute same test. runId:{} testId:{}", key.getRunId(), result.getTestId());
+            throw new TestRailUnitException(String.format("execute same test. runId:%s testId:%s",
+                key.getRunId(), result.getTestId()));
         }
     }
 
@@ -53,9 +56,9 @@ public class TestResultStore {
         return testResults == null || testResults.isEmpty();
     }
 
-    public Map<String, List<Map<String, Object>>> getResults(Pair<String, Class<?>> runId2Class) {
+    public Map<String, List<Map<String, Object>>> getResults(TestResultStoreKey key) {
 
-        List<TestResultModel> testResults = resultsMap.get(runId2Class);
+        List<TestResultModel> testResults = resultsMap.get(key);
         Map<String, List<Map<String, Object>>> data = new HashMap<String, List<Map<String, Object>>>();
         data.put("results", new ArrayList<Map<String, Object>>());
 

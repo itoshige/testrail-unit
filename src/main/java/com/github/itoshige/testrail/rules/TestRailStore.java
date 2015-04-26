@@ -5,9 +5,9 @@ import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.itoshige.testrail.client.Pair;
 import com.github.itoshige.testrail.client.TestRailClient.ResultStatus;
 import com.github.itoshige.testrail.model.TestResultModel;
+import com.github.itoshige.testrail.model.store.TestResultStoreKey;
 import com.github.itoshige.testrail.store.SyncManager;
 import com.github.itoshige.testrail.util.ConfigrationUtil;
 import com.github.itoshige.testrail.util.TestRailUnitUtil;
@@ -32,21 +32,22 @@ public class TestRailStore extends TestWatcher {
 
     protected void succeeded(Description desc) {
         if (!isDisabled(desc)) {
-            Pair<String, Class<?>> runId2Class = new Pair<String, Class<?>>(runId, desc.getTestClass());
+            TestResultStoreKey key = new TestResultStoreKey(runId, desc.getTestClass());
 
-            SyncManager.storeJunitTestResult(runId2Class,
-                new TestResultModel(SyncManager.getTestId(projectId, desc), ResultStatus.PASSED,
+            SyncManager.storeJunitTestResult(key,
+                new TestResultModel(SyncManager.getTestId(projectId, runId, desc), ResultStatus.PASSED,
                     "This test worked fine!"));
         }
     }
 
     protected void failed(Throwable e, Description desc) {
         if (!isDisabled(desc)) {
-            Pair<String, Class<?>> runId2Class = new Pair<String, Class<?>>(runId, desc.getTestClass());
+            TestResultStoreKey key = new TestResultStoreKey(runId, desc.getTestClass());
             logger.error("[ERROR]assertError : {}", e.getMessage());
-            SyncManager
-                .storeJunitTestResult(runId2Class, new TestResultModel(
-                    SyncManager.getTestId(projectId, desc), ResultStatus.FAILED, e.toString()));
+            SyncManager.storeJunitTestResult(
+                key,
+                new TestResultModel(SyncManager.getTestId(projectId, runId, desc), ResultStatus.FAILED, e
+                    .toString()));
         }
     }
 

@@ -2,8 +2,8 @@ package com.github.itoshige.testrail.store;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.itoshige.testrail.client.Pair;
 import com.github.itoshige.testrail.client.TestRailClient;
+import com.github.itoshige.testrail.model.store.RunStoreValue;
 import com.github.itoshige.testrail.util.CollectionUtil;
 
 /**
@@ -15,9 +15,11 @@ import com.github.itoshige.testrail.util.CollectionUtil;
 public class RunStore {
     private static final RunStore instance = new RunStore();
 
-    // runId to Pair<projectId, suiteId>
-    private final ConcurrentHashMap<String, Pair<String, String>> runDataMap = CollectionUtil
-        .newConcurrentMap();
+    // runId to projectId, suiteId
+    private final ConcurrentHashMap<String, RunStoreValue> runDataMap = CollectionUtil.newConcurrentMap();
+
+    private RunStore() {
+    }
 
     static RunStore getIns() {
         return instance;
@@ -27,12 +29,12 @@ public class RunStore {
         return runDataMap.containsKey(runId);
     }
 
-    public Pair<String, String> getRun(String runId) {
-        Pair<String, String> pair = runDataMap.get(runId);
-        if (pair == null) {
-            pair = TestRailClient.getRun(runId);
-            runDataMap.putIfAbsent(runId, pair);
+    public RunStoreValue getRun(String runId) {
+        RunStoreValue value = runDataMap.get(runId);
+        if (value == null) {
+            value = TestRailClient.getRun(runId);
+            runDataMap.putIfAbsent(runId, value);
         }
-        return pair;
+        return value;
     }
 }

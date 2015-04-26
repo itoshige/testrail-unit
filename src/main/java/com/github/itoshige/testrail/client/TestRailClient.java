@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.github.itoshige.testrail.client.core.APIClient;
 import com.github.itoshige.testrail.model.CaseModel;
 import com.github.itoshige.testrail.model.SectionModel;
+import com.github.itoshige.testrail.model.store.RunStoreValue;
+import com.github.itoshige.testrail.model.store.TestResultStoreKey;
 import com.github.itoshige.testrail.store.SyncManager;
 import com.github.itoshige.testrail.util.ConfigrationUtil;
 import com.github.itoshige.testrail.util.ConfigrationUtil.ClientInfoModel;
@@ -40,63 +42,58 @@ public class TestRailClient {
      * @param runId
      * @return projectId & suiteId
      */
-    public static Pair<String, String> getRun(String runId) {
-        JSONObject obj = (JSONObject) get(new StringBuilder("get_run/").append(runId).toString());
+    public static RunStoreValue getRun(String runId) {
+        JSONObject obj = (JSONObject) get(String.format("get_run/%s", runId));
         Object projectId = obj.get("project_id");
         Object suiteId = obj.get("suite_id");
         if (projectId != null && suiteId != null)
-            return new Pair<String, String>(projectId.toString(), suiteId.toString());
-        throw new TestInitializerException(new StringBuilder("test run data isn't in testrail. runId:")
-            .append(runId).toString());
+            return new RunStoreValue(projectId.toString(), suiteId.toString());
+        throw new TestInitializerException(String.format("test run data isn't in testrail. runId:%s", runId));
     }
 
     /************ section ************/
     public static JSONArray getSections(String projectId, String suiteId) {
-        return (JSONArray) get(new StringBuilder("get_sections/").append(projectId).append("&suite_id=")
-            .append(suiteId).toString());
+        return (JSONArray) get(String.format("get_sections/%s&suite_id=%s", projectId, suiteId));
     }
 
     public static JSONObject addSection(String projectId, SectionModel section) {
         logger.info("add section in testrail. projectId:{} sectionName:{}", projectId, section.getName());
-        return (JSONObject) post(new StringBuilder("add_section/").append(projectId).toString(),
-            section.getSection());
+        return (JSONObject) post(String.format("add_section/%s", projectId), section.getSection());
     }
 
     public static void deleteSection(String sectionId) {
         logger.info("delete section in testrail. sectionId:{}", sectionId);
-        post(new StringBuilder("delete_section/").append(sectionId).toString());
+        post(String.format("delete_section/%s", sectionId));
     }
 
     /************ test case ************/
     public static JSONArray getCases(String projectId, String suiteId) {
-        return (JSONArray) get(new StringBuilder("get_cases/").append(projectId).append("&suite_id=")
-            .append(suiteId).toString());
+        return (JSONArray) get(String.format("get_cases/%s&suite_id=%s", projectId, suiteId));
     }
 
     public static JSONObject addCase(String sectionId, CaseModel caze) {
         logger.info("add case in testrail. sectionId:{} title:{}", sectionId, caze.getTitle());
-        return (JSONObject) post(new StringBuilder("add_case/").append(sectionId).toString(), caze.getCase());
+        return (JSONObject) post(String.format("add_case/%s", sectionId), caze.getCase());
     }
 
     public static void deleteCase(String caseId) {
         logger.info("delete case in testrail. caseId:{}", caseId);
-        post(new StringBuilder("delete_case/").append(caseId).toString());
+        post(String.format("delete_case/%s", caseId));
     }
 
     /************ test ************/
     public static JSONArray getTests(String runId) {
-        return (JSONArray) get(new StringBuilder("get_tests/").append(runId).toString());
+        return (JSONArray) get(String.format("get_tests/%s", runId));
     }
 
     /************ results ************/
-    public static JSONArray addResults(Pair<String, Class<?>> runId2Class) {
+    public static JSONArray addResults(TestResultStoreKey runId2Class) {
         Map<String, List<Map<String, Object>>> results = SyncManager.getJunitTestResults(runId2Class);
         if (results.isEmpty())
             return new JSONArray();
 
-        logger.info("update testrail. runId:{}", runId2Class.getFirst());
-        return (JSONArray) post(new StringBuilder("add_results/").append(runId2Class.getFirst()).toString(),
-            results);
+        logger.info("update testrail. runId:{}", runId2Class.getRunId());
+        return (JSONArray) post(String.format("add_results/%s", runId2Class.getRunId()), results);
     }
 
     private static Object get(String command) {
@@ -104,8 +101,7 @@ public class TestRailClient {
             Object obj = client.sendGet(command);
             return obj;
         } catch (Exception e) {
-            throw new TestInitializerException(new StringBuilder("command:").append(command)
-                .append(" cannot get.").toString(), e);
+            throw new TestInitializerException(String.format("command:%s cannot get.", command), e);
         }
     }
 
@@ -118,8 +114,8 @@ public class TestRailClient {
             Object obj = client.sendPost(command, map);
             return obj;
         } catch (Exception e) {
-            throw new TestInitializerException(new StringBuilder("command:").append(command)
-                .append(" cannot post. map:").append(map.toString()).toString(), e);
+            throw new TestInitializerException(String.format("command:%s cannot post. map:%s", command,
+                map.toString()), e);
         }
     }
 

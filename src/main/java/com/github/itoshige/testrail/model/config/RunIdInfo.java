@@ -19,8 +19,8 @@ public class RunIdInfo {
     public RunIdInfo(Object target, Object runId) {
         super();
         if (isEmpty(target) || isEmpty(runId))
-            throw new TestInitializerException(new StringBuilder(ConfigrationUtil.CONFIG_FILE).append(
-                "[runIds] is invalid.").toString());
+            throw new TestInitializerException(String.format("%s [runIds] is invalid.",
+                ConfigrationUtil.CONFIG_FILE));
 
         this.target = (String) target;
         this.runId = (String) runId;
@@ -29,9 +29,9 @@ public class RunIdInfo {
     public int getCommaCount() {
         int count = target.split(DELIMITER).length;
         if (count == 0)
-            throw new TestInitializerException(new StringBuilder(ConfigrationUtil.CONFIG_FILE).append(
-                "[runIds.target] is invalid. Please set package name in target. ex) com.github.itoshige")
-                .toString());
+            throw new TestInitializerException(String.format(
+                "%s [runIds.target] is invalid. Please set package name in target. ex) com.github.itoshige",
+                ConfigrationUtil.CONFIG_FILE));
 
         return count;
     }

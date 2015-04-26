@@ -5,9 +5,9 @@ import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.itoshige.testrail.client.Pair;
 import com.github.itoshige.testrail.client.TestInitializerException;
 import com.github.itoshige.testrail.client.TestRailClient;
+import com.github.itoshige.testrail.model.store.TestResultStoreKey;
 import com.github.itoshige.testrail.store.SyncManager;
 import com.github.itoshige.testrail.util.ConfigrationUtil;
 import com.github.itoshige.testrail.util.TestRailUnitUtil;
@@ -47,7 +47,7 @@ public class TestRailUnit extends TestWatcher {
             this.projectId = SyncManager.storeTestRailData(runId, desc.getTestClass());
 
         } catch (TestInitializerException e) {
-            logger.error("[ERROR] exception:{}", e);
+            logger.error("[ERROR] exception:", e);
             System.exit(1);
         }
     }
@@ -56,7 +56,7 @@ public class TestRailUnit extends TestWatcher {
         if (isDisabled(desc))
             return;
 
-        TestRailClient.addResults(new Pair<String, Class<?>>(runId, desc.getTestClass()));
+        TestRailClient.addResults(new TestResultStoreKey(runId, desc.getTestClass()));
         logger.debug("TestRailUnit end");
     }
 
