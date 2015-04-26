@@ -13,7 +13,7 @@ import org.junit.Test;
  * @author abhijeet.burle
  *
  */
-@LinkTestRailRun(356)
+@LinkTestRailRun(285)
 public class TestLevel3Overriden extends TestBase {
 	/**
 	 * 
