@@ -3,7 +3,9 @@ package org.itoshige.testrail.rules;
 import org.itoshige.testrail.annotation.IgnoreTestRail;
 import org.itoshige.testrail.annotation.LinkTestRailHelper;
 import org.itoshige.testrail.annotation.LinkTestRailRun;
-import org.itoshige.testrail.cache.RunCache;
+import org.itoshige.testrail.cache.CaseCache;
+import org.itoshige.testrail.cache.SectionCache;
+import org.itoshige.testrail.cache.TestCache;
 import org.itoshige.testrail.client.Pair;
 import org.itoshige.testrail.client.TestInitializerException;
 import org.itoshige.testrail.client.TestRailClient;
@@ -54,8 +56,11 @@ public class TestRailUnit extends TestWatcher {
 								+ desc.getTestClass().getSimpleName() + "].");
 		
 
-			RunCache.getIns().getRun(runId);
-			
+            TestCache.getIns().setTestsMap(runId);
+            Pair<String, String> pair = TestRailClient.getRun(runId);
+
+            SectionCache.getIns().setSectionMap(pair.getFirst(), pair.getSecond());
+            CaseCache.getIns().setCasesMap(pair.getFirst(), pair.getSecond());
             logger.info("set testrail data to cache. runId:{}", runId);
         } catch (TestInitializerException e) {
             logger.error("[ERROR] exception:{}", e);
