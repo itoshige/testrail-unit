@@ -47,8 +47,8 @@
 ```
 
 ### how to use
-* [Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/TestBase.java)
-|1. set @ClassRule and @Rule in base junit test class.
+[1] set @ClassRule and @Rule in base junit test class.
+[Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/TestBase.java)
 ```
 @ClassRule
 public static TestRailUnit tr = new TestRailUnit();
@@ -56,8 +56,8 @@ public static TestRailUnit tr = new TestRailUnit();
 public TestRailStorage ts = new TestRailStorage(tr);
 ...
 ```
-* [Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/rules/TestRailClassAddTest.java)
-|2. If you don't want to reflect junit result to testrail, Please use @IgnoreTestRail
+[2] If you don't want to reflect junit result to testrail, Please use @IgnoreTestRail
+[Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/rules/TestRailClassAddTest.java)
 ```
 @IgnoreTestRail
 @Test
@@ -67,7 +67,7 @@ public void Sample_01() {
 * you can also use @IgnoreTestRail to class.
 ```
 
-|3. If you want to change section name, Please use @Section
+[3] If you want to change section name, Please use @Section
 ```
 @Section(name = "サンプルセクション ")
 public class TestRailClassAddTest extends TestBase {
@@ -119,8 +119,8 @@ public class TestRailClassAddTest extends TestBase {
 ```
 
 ### how to use
-1. テストクラスの親クラスに @ClassRule and @Rule を設置する
-[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/TestBase.java)
+[1] テストクラスの親クラスに @ClassRule and @Rule を設置する
+[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/TestBase.java)
 ```
 @ClassRule
 public static TestRailUnit tr = new TestRailUnit();
@@ -128,8 +128,8 @@ public static TestRailUnit tr = new TestRailUnit();
 public TestRailStorage ts = new TestRailStorage(tr);
 ...
 ```
-2. もし、testrailに反映したくないクラス・メソッドは、@IgnoreTestRail を配置する
-[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/rules/TestRailClassAddTest.java)
+[2] もし、testrailに反映したくないクラス・メソッドは、@IgnoreTestRail を配置する
+[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/rules/TestRailClassAddTest.java)
 ```
 @IgnoreTestRail
 @Test
@@ -137,7 +137,7 @@ public void Sample_01() {
 ...
 
 ```
-3. testrailに反映するSection名をクラス名ではなく、任意の値にしたい場合は、@Section を配置する
+[3]. testrailに反映するSection名をクラス名ではなく、任意の値にしたい場合は、@Section を配置する
 ```
 @Section(name = "サンプルセクション ")
 public class TestRailClassAddTest extends TestBase {
