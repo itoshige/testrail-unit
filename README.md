@@ -48,7 +48,7 @@
 
 ### how to use
 [1] set @ClassRule and @Rule in base junit test class.
-[Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/TestBase.java)
+[Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/TestBase.java)
 ```
 @ClassRule
 public static TestRailUnit tr = new TestRailUnit();
@@ -57,7 +57,7 @@ public TestRailStorage ts = new TestRailStorage(tr);
 ...
 ```
 [2] If you don't want to reflect junit result to testrail, Please use @IgnoreTestRail
-[Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/rules/TestRailClassAddTest.java)
+[Please check it](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/rules/TestRailClassAddTest.java)
 ```
 @IgnoreTestRail
 @Test
@@ -120,7 +120,7 @@ public class TestRailClassAddTest extends TestBase {
 
 ### how to use
 [1] テストクラスの親クラスに @ClassRule and @Rule を設置する
-[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/TestBase.java)
+[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/TestBase.java)
 ```
 @ClassRule
 public static TestRailUnit tr = new TestRailUnit();
@@ -129,7 +129,7 @@ public TestRailStorage ts = new TestRailStorage(tr);
 ...
 ```
 [2] もし、testrailに反映したくないクラス・メソッドは、@IgnoreTestRail を配置する
-[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/org/itoshige/testrail/rules/TestRailClassAddTest.java)
+[このソースを参考](https://github.com/itoshige/testrail-unit/blob/develop/src/test/java/com/github/itoshige/testrail/rules/TestRailClassAddTest.java)
 ```
 @IgnoreTestRail
 @Test
