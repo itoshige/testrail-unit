@@ -1,3 +1,9 @@
+/**
+ * Copyright 2015 itoshige1017@gmail.com
+ * 
+ * This software is released under the MIT License.
+ * http://opensource.org/licenses/mit-license.php
+ */
 package com.github.itoshige.testrail.rules;
 
 import static org.hamcrest.CoreMatchers.*;
