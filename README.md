@@ -143,3 +143,7 @@ public void Sample_01() {
 public class TestRailClassAddTest extends TestBase {
 ...
 ```
+
+## License
+* MIT  
+    * see LICENSE
