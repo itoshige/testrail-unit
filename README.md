@@ -53,7 +53,7 @@
 @ClassRule
 public static TestRailUnit tr = new TestRailUnit();
 @Rule
-public TestRailStorage ts = new TestRailStorage(tr);
+public TestRailStore ts = new TestRailStore(tr);
 ...
 ```
 [2] If you don't want to reflect junit result to testrail, Please use @IgnoreTestRail
@@ -125,7 +125,7 @@ public class TestRailClassAddTest extends TestBase {
 @ClassRule
 public static TestRailUnit tr = new TestRailUnit();
 @Rule
-public TestRailStorage ts = new TestRailStorage(tr);
+public TestRailStore ts = new TestRailStore(tr);
 ...
 ```
 [2] もし、testrailに反映したくないクラス・メソッドは、@IgnoreTestRail を配置する
