@@ -6,7 +6,6 @@
  */
 package com.github.itoshige.testrail.util;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -104,7 +103,7 @@ public class PackageClassSearchUtil {
         Set<String> sectionNamesInTestRun = new HashSet<String>();
         try {
             for (JavaFileObject f : fm.list(StandardLocation.CLASS_PATH, packageName, kind, true)) {
-                String fileName = f.getName();
+                String fileName = f.toUri().toString();
                 if (!fileName.endsWith(FILE_END))
                     continue;
 
@@ -133,7 +132,7 @@ public class PackageClassSearchUtil {
     }
 
     private static String getFileNameWithPackage(String fileName, String packageName) {
-        String filePackage = fileName.replace(File.separator, ".");
+        String filePackage = fileName.replace("/", ".");
 
         Pattern pattern = Pattern.compile(new StringBuilder(packageName).append(".*").toString());
         Matcher matcher = pattern.matcher(filePackage);
