@@ -1,0 +1,22 @@
+{
+    "url":"http://example.com/",
+    "user":"hoge",
+    "password":"hoga",
+    "isDisabled":false,
+    "sync":true,
+    "isDebugEnabled":true,
+    "runIds":[
+        {
+        "target":"com.github.itoshige.testrail.rules",
+        "runId":"402"
+        },
+        {
+        "target":"com.github.itoshige.testrail.unit",
+        "runId":"403"
+        },
+        {
+        "target":"com.github.itoshige.testrail",
+        "runId":"404"
+        }
+    ]
+}
